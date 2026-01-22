@@ -163,6 +163,11 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
   };
 
   const sendRemoteCommand = (cmd: string) => {
+    // Haptic feedback for mobile devices
+    if (typeof navigator.vibrate === 'function') {
+        navigator.vibrate(40);
+    }
+    
     setRemoteSignal(cmd);
     setTimeout(() => setRemoteSignal(null), 300);
   };
@@ -235,7 +240,9 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
   };
 
   const renderRemoteControl = (device: DisplayDevice) => {
-      // Show remote only for TV, AUDIO, IOT and only if connected
+      // Show remote only for TV, AUDIO, IOT.
+      // For Bluetooth devices, they must be connected.
+      // For IP devices (WIFI/LAN), we allow remote even if status simulates offline (WAKE_ON_LAN).
       if (!['TV', 'AUDIO', 'IOT'].includes(device.type)) return null;
       if (device.connection === 'BLUETOOTH' && device.status !== 'CONNECTED') return null;
 
@@ -253,62 +260,62 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 p-2 bg-slate-900/50 rounded-lg border border-slate-800">
+            <div className="grid grid-cols-3 gap-3 p-3 bg-slate-900/50 rounded-lg border border-slate-800 select-none">
                 {/* Power */}
                 <button 
                     onClick={() => sendRemoteCommand('POWER_TOGGLE')}
-                    className="col-span-1 p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 rounded flex flex-col items-center justify-center active:scale-95 transition-all group touch-manipulation min-h-[44px]"
+                    className="col-span-1 p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 rounded-lg flex flex-col items-center justify-center active:scale-95 transition-all group touch-manipulation min-h-[50px]"
                 >
-                    <Power className="w-4 h-4 text-red-500 group-hover:shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-                    <span className="text-[8px] text-red-400 mt-1">PWR</span>
+                    <Power className="w-5 h-5 text-red-500 group-hover:shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                    <span className="text-[9px] text-red-400 mt-1 font-bold">PWR</span>
                 </button>
-                <div className="col-span-2 grid grid-cols-2 gap-2">
+                <div className="col-span-2 grid grid-cols-2 gap-3">
                     <button 
                         onClick={() => sendRemoteCommand('MENU')}
-                        className="p-2 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded flex items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[44px]"
+                        className="p-3 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded-lg flex items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[50px]"
                     >
-                        <Menu className="w-3 h-3 text-slate-300" />
+                        <Menu className="w-4 h-4 text-slate-300" />
                     </button>
                     <button 
                         onClick={() => sendRemoteCommand('SOURCE')}
-                        className="p-2 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded flex items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[44px]"
+                        className="p-3 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded-lg flex items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[50px]"
                     >
-                        <Square className="w-3 h-3 text-slate-300" />
+                        <Square className="w-4 h-4 text-slate-300" />
                     </button>
                 </div>
                 
                 {/* D-Pad Area */}
-                <div className="col-span-3 h-24 relative bg-slate-800 rounded-full my-1 border border-slate-700 mx-8">
-                     <button onClick={() => sendRemoteCommand('UP')} className="absolute top-0 left-1/2 -translate-x-1/2 p-2 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-10 h-10 flex items-center justify-center"><ChevronUp className="w-6 h-6" /></button>
-                     <button onClick={() => sendRemoteCommand('DOWN')} className="absolute bottom-0 left-1/2 -translate-x-1/2 p-2 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-10 h-10 flex items-center justify-center"><ChevronDown className="w-6 h-6" /></button>
-                     <button onClick={() => sendRemoteCommand('LEFT')} className="absolute left-0 top-1/2 -translate-y-1/2 p-2 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-10 h-10 flex items-center justify-center"><ChevronLeft className="w-6 h-6" /></button>
-                     <button onClick={() => sendRemoteCommand('RIGHT')} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-10 h-10 flex items-center justify-center"><ChevronRight className="w-6 h-6" /></button>
-                     <button onClick={() => sendRemoteCommand('OK')} className="absolute inset-0 m-auto w-10 h-10 bg-slate-700 rounded-full border border-slate-600 hover:bg-cyber-600 active:scale-95 flex items-center justify-center transition-colors touch-manipulation">
-                        <span className="text-[8px] font-bold">OK</span>
+                <div className="col-span-3 h-32 relative bg-slate-800 rounded-full my-2 border border-slate-700 mx-6 shadow-inner">
+                     <button onClick={() => sendRemoteCommand('UP')} className="absolute top-0 left-1/2 -translate-x-1/2 p-3 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-12 h-12 flex items-center justify-center"><ChevronUp className="w-7 h-7" /></button>
+                     <button onClick={() => sendRemoteCommand('DOWN')} className="absolute bottom-0 left-1/2 -translate-x-1/2 p-3 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-12 h-12 flex items-center justify-center"><ChevronDown className="w-7 h-7" /></button>
+                     <button onClick={() => sendRemoteCommand('LEFT')} className="absolute left-0 top-1/2 -translate-y-1/2 p-3 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-12 h-12 flex items-center justify-center"><ChevronLeft className="w-7 h-7" /></button>
+                     <button onClick={() => sendRemoteCommand('RIGHT')} className="absolute right-0 top-1/2 -translate-y-1/2 p-3 hover:text-cyber-400 active:scale-90 transition-transform touch-manipulation w-12 h-12 flex items-center justify-center"><ChevronRight className="w-7 h-7" /></button>
+                     <button onClick={() => sendRemoteCommand('OK')} className="absolute inset-0 m-auto w-12 h-12 bg-slate-700 rounded-full border border-slate-600 hover:bg-cyber-600 active:scale-95 flex items-center justify-center transition-colors touch-manipulation shadow-lg">
+                        <span className="text-[10px] font-bold">OK</span>
                      </button>
                 </div>
 
                 {/* Vol / CH */}
                 <button 
                     onClick={() => sendRemoteCommand('VOL_UP')}
-                    className="p-2 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[44px]"
+                    className="p-3 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded-lg flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[50px]"
                 >
-                    <Volume2 className="w-3 h-3 text-slate-300" />
-                    <span className="text-[8px] text-slate-500 mt-1">VOL+</span>
+                    <Volume2 className="w-4 h-4 text-slate-300" />
+                    <span className="text-[9px] text-slate-500 mt-1 font-bold">VOL+</span>
                 </button>
                 <button 
                     onClick={() => sendRemoteCommand('MUTE')}
-                    className="p-2 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[44px]"
+                    className="p-3 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded-lg flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[50px]"
                 >
-                    <VolumeX className="w-3 h-3 text-slate-300" />
-                    <span className="text-[8px] text-slate-500 mt-1">MUTE</span>
+                    <VolumeX className="w-4 h-4 text-slate-300" />
+                    <span className="text-[9px] text-slate-500 mt-1 font-bold">MUTE</span>
                 </button>
                 <button 
                     onClick={() => sendRemoteCommand('VOL_DOWN')}
-                    className="p-2 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[44px]"
+                    className="p-3 bg-slate-800 hover:bg-cyber-700 border border-slate-700 rounded-lg flex flex-col items-center justify-center active:scale-95 transition-all touch-manipulation min-h-[50px]"
                 >
-                    <Volume1 className="w-3 h-3 text-slate-300" />
-                    <span className="text-[8px] text-slate-500 mt-1">VOL-</span>
+                    <Volume1 className="w-4 h-4 text-slate-300" />
+                    <span className="text-[9px] text-slate-500 mt-1 font-bold">VOL-</span>
                 </button>
             </div>
             <div className="text-[8px] text-center text-slate-600 mt-2 font-mono">
@@ -444,7 +451,12 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
     );
 
     return (
-      <div className="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-md p-3 sm:p-4 animate-in fade-in slide-in-from-bottom-4 duration-200 rounded-lg flex flex-col border border-slate-700/50 shadow-2xl overflow-hidden">
+      // Mobile: Fixed position "Bottom Sheet". Desktop: Absolute over container
+      <div className="fixed sm:absolute inset-0 sm:inset-0 z-50 bg-slate-900/95 sm:bg-slate-900/95 backdrop-blur-md p-3 sm:p-4 animate-in slide-in-from-bottom-full sm:fade-in sm:slide-in-from-bottom-4 duration-300 rounded-t-2xl sm:rounded-lg flex flex-col border-t sm:border border-slate-700/50 shadow-2xl overflow-hidden mt-10 sm:mt-0 pb-safe">
+        
+        {/* Mobile Drag Handle */}
+        <div className="sm:hidden w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-3 flex-shrink-0"></div>
+
         <div className="flex justify-between items-center border-b border-slate-700 pb-3 mb-3 flex-shrink-0 min-h-[44px]">
           <div className="flex items-center space-x-3 overflow-hidden">
             {icon}
@@ -459,7 +471,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 touch-pan-y">
+        <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 touch-pan-y overscroll-contain">
             <div className="space-y-4 mb-4">
             
             {/* BLE Specific Controls */}
@@ -478,7 +490,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
                         {selectedDevice.status !== 'CONNECTED' && selectedDevice.status !== 'PAIRING' && (
                             <button 
                                 onClick={() => handlePairDevice(selectedDevice)}
-                                className="flex-1 flex items-center justify-center space-x-1 py-3 sm:py-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/50 rounded transition-all text-[10px] font-bold uppercase tracking-wider active:scale-95 touch-manipulation"
+                                className="flex-1 flex items-center justify-center space-x-1 py-3 sm:py-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/50 rounded transition-all text-[10px] font-bold uppercase tracking-wider active:scale-95 touch-manipulation min-h-[44px] sm:min-h-0"
                             >
                                 <Link className="w-3 h-3" />
                                 <span>Pair Device</span>
@@ -488,7 +500,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
                         {/* Forget Button */}
                         <button 
                             onClick={() => handleForgetDevice(selectedDevice)}
-                            className="flex-1 flex items-center justify-center space-x-1 py-3 sm:py-1.5 bg-slate-700/30 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/50 rounded transition-all text-[10px] font-bold uppercase tracking-wider active:scale-95 touch-manipulation"
+                            className="flex-1 flex items-center justify-center space-x-1 py-3 sm:py-1.5 bg-slate-700/30 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/50 rounded transition-all text-[10px] font-bold uppercase tracking-wider active:scale-95 touch-manipulation min-h-[44px] sm:min-h-0"
                         >
                             <Trash2 className="w-3 h-3" />
                             <span>Forget</span>
@@ -537,7 +549,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
 
             {/* Live Monitoring Interface for Router */}
             {showMonitorControls && (
-                <div className="mt-4 pt-4 border-t border-slate-700">
+                <div className="mt-4 pt-4 border-t border-slate-700 pb-10 sm:pb-0">
                     <div className="flex justify-between items-center mb-3">
                         <span className="text-xs font-bold text-slate-300">HYBRID SCANNER</span>
                         <div className="flex space-x-2">
@@ -546,17 +558,17 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
                                 onClick={scanBluetooth}
                                 disabled={isBleScanning || !isBleSupported}
                                 title={!isBleSupported ? "Browser does not support Web Bluetooth" : "Scan for BLE devices"}
-                                className={`flex items-center space-x-1 px-3 py-1.5 sm:py-1 rounded border transition-all touch-manipulation ${!isBleSupported ? 'opacity-50 cursor-not-allowed bg-slate-800 border-slate-700 text-slate-500' : isBleScanning ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-blue-400 hover:text-blue-400'}`}
+                                className={`flex items-center space-x-1 px-3 py-2 sm:py-1 rounded border transition-all touch-manipulation ${!isBleSupported ? 'opacity-50 cursor-not-allowed bg-slate-800 border-slate-700 text-slate-500' : isBleScanning ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-blue-400 hover:text-blue-400'}`}
                             >
-                                <Bluetooth className={`w-3 h-3 ${isBleScanning ? 'animate-pulse' : ''}`} />
+                                <Bluetooth className={`w-3.5 h-3.5 sm:w-3 sm:h-3 ${isBleScanning ? 'animate-pulse' : ''}`} />
                                 <span className="text-[10px] font-bold">BLE SCAN</span>
                             </button>
 
                             <button 
                                 onClick={toggleMonitoring}
-                                className={`flex items-center space-x-1 px-3 py-1.5 sm:py-1 rounded border transition-all touch-manipulation ${isMonitoring ? 'bg-red-500/10 border-red-500/50 text-red-500 hover:bg-red-500/20' : 'bg-cyber-500/10 border-cyber-500/50 text-cyber-500 hover:bg-cyber-500/20'}`}
+                                className={`flex items-center space-x-1 px-3 py-2 sm:py-1 rounded border transition-all touch-manipulation ${isMonitoring ? 'bg-red-500/10 border-red-500/50 text-red-500 hover:bg-red-500/20' : 'bg-cyber-500/10 border-cyber-500/50 text-cyber-500 hover:bg-cyber-500/20'}`}
                             >
-                                {isMonitoring ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
+                                {isMonitoring ? <Square className="w-3.5 h-3.5 sm:w-3 sm:h-3 fill-current" /> : <Play className="w-3.5 h-3.5 sm:w-3 sm:h-3 fill-current" />}
                                 <span className="text-[10px] font-bold">{isMonitoring ? 'IP STOP' : 'IP START'}</span>
                             </button>
                         </div>
@@ -565,21 +577,21 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
                     {/* Filter Input */}
                     <div className="mb-3 relative group">
                         <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                            <Search className="w-3 h-3 text-slate-500 group-focus-within:text-cyber-400 transition-colors" />
+                            <Search className="w-3.5 h-3.5 text-slate-500 group-focus-within:text-cyber-400 transition-colors" />
                         </div>
                         <input 
                             type="text" 
                             placeholder="Filter by Hostname, IP, MAC..." 
                             value={filterText}
                             onChange={(e) => setFilterText(e.target.value)}
-                            className="bg-slate-900/50 border border-slate-700 text-slate-300 text-[10px] rounded p-2 sm:p-1.5 pl-8 w-full focus:outline-none focus:border-cyber-500 transition-colors font-mono"
+                            className="bg-slate-900/50 border border-slate-700 text-slate-300 text-[11px] sm:text-[10px] rounded p-2.5 sm:p-1.5 pl-8 w-full focus:outline-none focus:border-cyber-500 transition-colors font-mono"
                         />
                         {filterText && (
                             <button 
                                 onClick={() => setFilterText('')}
                                 className="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer text-slate-500 hover:text-white touch-manipulation p-2"
                             >
-                                <X className="w-3 h-3" />
+                                <X className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
                             </button>
                         )}
                     </div>
@@ -645,7 +657,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
             )}
         </div>
 
-        <div className="mt-2 pt-2 border-t border-slate-800 text-[10px] text-center text-slate-600 font-mono flex-shrink-0">
+        <div className="mt-2 pt-2 border-t border-slate-800 text-[10px] text-center text-slate-600 font-mono flex-shrink-0 mb-4 sm:mb-0">
           SECURE ENCLAVE::ACCESS_GRANTED
         </div>
       </div>
@@ -653,7 +665,7 @@ const NetworkTopology: React.FC<Props> = ({ info }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full w-full py-4 overflow-hidden touch-pan-x touch-pan-y">
+    <div className="relative flex flex-col items-center justify-center h-full w-full py-4 overflow-hidden touch-pan-x touch-pan-y select-none">
       
       {/* Background Grid Effect */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" 
