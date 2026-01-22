@@ -1,0 +1,7 @@
+{
+  "name": "TopBot Nexus | PwnZ Dashboard",
+  "description": "A progressive web app dashboard visualization of real-time system diagnostics, hardware telemetry, and secure network topology management.",
+  "requestFramePermissions": [
+    "bluetooth"
+  ]
+}
